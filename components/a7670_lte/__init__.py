@@ -12,14 +12,16 @@ CODEOWNERS = ["@chadmatsalla"]
 MULTI_CONF = True
 
 a7670_lte_ns = cg.esphome_ns.namespace("a7670_lte")
-A7670LTEComponent = a7670_lte_ns.class_("a7670_lteComponent", cg.Component)
+A7670LTEComponent = a7670_lte_ns.class_("A7670LTEComponent", cg.Component)
 
 CONFIG_SCHEMA = cv.Schema({
-  cv.Required('csm'): cv.string,
+  cv.GenerateID(): cv.declare_id(EmptyComponent),
+  cv.Required('server'): cv.string,
+  cv.Required('user'): cv.string,
+  cv.Required('pass'): cv.string,
   cv.Optional('smlm', default=10): cv.int_,
 }).extend(cv.COMPONENT_SCHEMA)
 
 def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
-    yield cg.register_component(var)
-    cg.add(var.set_my_required_key(config[CONF_MY_REQUIRED_KEY]))
+  var = cg.new_Pvariable(config[CONF_ID])
+  yield cg.register_component(var, config)
