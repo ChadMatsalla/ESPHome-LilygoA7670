@@ -1,16 +1,16 @@
-#include "sim7600.h"
+#include "a7670.h"
 #include "esphome/core/log.h"
 #include <cstring>
 
 namespace esphome {
-namespace sim7600 {
+namespace a7670 {
 
-static const char *const TAG = "sim7600";
+static const char *const TAG = "a7670";
 
 const char ASCII_CR = 0x0D;
 const char ASCII_LF = 0x0A;
 
-void Sim7600Component::update() {
+void a7670Component::update() {
   if (this->watch_dog_++ == 2) {
     this->state_ = STATE_INIT;
     this->write(26);
@@ -58,7 +58,7 @@ void Sim7600Component::update() {
   }
 }
 
-void Sim7600Component::send_cmd_(const std::string &message) {
+void a7670Component::send_cmd_(const std::string &message) {
   ESP_LOGV(TAG, "S: %s - %d", message.c_str(), this->state_);
   this->watch_dog_ = 0;
   this->write_str(message.c_str());
@@ -66,7 +66,7 @@ void Sim7600Component::send_cmd_(const std::string &message) {
   this->write_byte(ASCII_LF);
 }
 
-void Sim7600Component::parse_cmd_(std::string message) {
+void a7670Component::parse_cmd_(std::string message) {
   if (message.empty())
     return;
 
@@ -412,15 +412,15 @@ void Sim7600Component::parse_cmd_(std::string message) {
       ESP_LOGW(TAG, "Unhandled: %s - %d", message.c_str(), this->state_);
       break;
   }
-}  // namespace sim7600
+}  // namespace a7670
 
-void Sim7600Component::loop() {
+void a7670Component::loop() {
   // Read message
   while (this->available()) {
     uint8_t byte;
     this->read_byte(&byte);
 
-    if (this->read_pos_ == SIM7600_READ_BUFFER_LENGTH)
+    if (this->read_pos_ == a7670_READ_BUFFER_LENGTH)
       this->read_pos_ = 0;
 
     ESP_LOGVV(TAG, "Buffer pos: %u %d", this->read_pos_, byte);  // NOLINT
@@ -449,20 +449,20 @@ void Sim7600Component::loop() {
   }
 }
 
-void Sim7600Component::send_sms(const std::string &recipient, const std::string &message) {
+void a7670Component::send_sms(const std::string &recipient, const std::string &message) {
   this->recipient_ = recipient;
   this->outgoing_message_ = message;
   this->send_pending_ = true;
 }
 
-void Sim7600Component::send_ussd(const std::string &ussd_code) {
+void a7670Component::send_ussd(const std::string &ussd_code) {
   ESP_LOGD(TAG, "Sending USSD code: %s", ussd_code.c_str());
   this->ussd_ = ussd_code;
   this->send_ussd_pending_ = true;
   this->update();
 }
-void Sim7600Component::dump_config() {
-  ESP_LOGCONFIG(TAG, "SIM7600:");
+void a7670Component::dump_config() {
+  ESP_LOGCONFIG(TAG, "a7670:");
 #ifdef USE_BINARY_SENSOR
   LOG_BINARY_SENSOR("  ", "Registered", this->registered_binary_sensor_);
 #endif
@@ -470,14 +470,14 @@ void Sim7600Component::dump_config() {
   LOG_SENSOR("  ", "Rssi", this->rssi_sensor_);
 #endif
 }
-void Sim7600Component::dial(const std::string &recipient) {
+void a7670Component::dial(const std::string &recipient) {
   this->recipient_ = recipient;
   this->dial_pending_ = true;
 }
-void Sim7600Component::connect() { this->connect_pending_ = true; }
-void Sim7600Component::disconnect() { this->disconnect_pending_ = true; }
+void a7670Component::connect() { this->connect_pending_ = true; }
+void a7670Component::disconnect() { this->disconnect_pending_ = true; }
 
-void Sim7600Component::set_registered_(bool registered) {
+void a7670Component::set_registered_(bool registered) {
   this->registered_ = registered;
 #ifdef USE_BINARY_SENSOR
   if (this->registered_binary_sensor_ != nullptr)
@@ -485,5 +485,5 @@ void Sim7600Component::set_registered_(bool registered) {
 #endif
 }
 
-}  // namespace sim7600
+}  // namespace a7670
 }  // namespace esphome

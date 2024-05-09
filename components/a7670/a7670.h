@@ -14,9 +14,9 @@
 #include "esphome/core/automation.h"
 
 namespace esphome {
-namespace sim7600 {
+namespace a7670 {
 
-const uint16_t SIM7600_READ_BUFFER_LENGTH = 1024;
+const uint16_t a7670_READ_BUFFER_LENGTH = 1024;
 
 enum State {
   STATE_IDLE = 0,
@@ -47,7 +47,7 @@ enum State {
   STATE_RECEIVED_USSD
 };
 
-class Sim7600Component : public uart::UARTDevice, public PollingComponent {
+class a7670Component : public uart::UARTDevice, public PollingComponent {
  public:
   /// Retrieve the latest sensor values. This operation takes approximately 16ms.
   void update() override;
@@ -96,12 +96,12 @@ class Sim7600Component : public uart::UARTDevice, public PollingComponent {
 #endif
   std::string sender_;
   std::string message_;
-  char read_buffer_[SIM7600_READ_BUFFER_LENGTH];
+  char read_buffer_[a7670_READ_BUFFER_LENGTH];
   size_t read_pos_{0};
   uint8_t parse_index_{0};
   uint8_t watch_dog_{0};
   bool expect_ack_{false};
-  sim7600::State state_{STATE_IDLE};
+  a7670::State state_{STATE_IDLE};
   bool registered_{false};
 
   std::string recipient_;
@@ -121,44 +121,44 @@ class Sim7600Component : public uart::UARTDevice, public PollingComponent {
   CallbackManager<void(std::string)> ussd_received_callback_;
 };
 
-class Sim7600ReceivedMessageTrigger : public Trigger<std::string, std::string> {
+class a7670ReceivedMessageTrigger : public Trigger<std::string, std::string> {
  public:
-  explicit Sim7600ReceivedMessageTrigger(Sim7600Component *parent) {
+  explicit a7670ReceivedMessageTrigger(a7670Component *parent) {
     parent->add_on_sms_received_callback(
         [this](const std::string &message, const std::string &sender) { this->trigger(message, sender); });
   }
 };
 
-class Sim7600IncomingCallTrigger : public Trigger<std::string> {
+class a7670IncomingCallTrigger : public Trigger<std::string> {
  public:
-  explicit Sim7600IncomingCallTrigger(Sim7600Component *parent) {
+  explicit a7670IncomingCallTrigger(a7670Component *parent) {
     parent->add_on_incoming_call_callback([this](const std::string &caller_id) { this->trigger(caller_id); });
   }
 };
 
-class Sim7600CallConnectedTrigger : public Trigger<> {
+class a7670CallConnectedTrigger : public Trigger<> {
  public:
-  explicit Sim7600CallConnectedTrigger(Sim7600Component *parent) {
+  explicit a7670CallConnectedTrigger(a7670Component *parent) {
     parent->add_on_call_connected_callback([this]() { this->trigger(); });
   }
 };
 
-class Sim7600CallDisconnectedTrigger : public Trigger<> {
+class a7670CallDisconnectedTrigger : public Trigger<> {
  public:
-  explicit Sim7600CallDisconnectedTrigger(Sim7600Component *parent) {
+  explicit a7670CallDisconnectedTrigger(a7670Component *parent) {
     parent->add_on_call_disconnected_callback([this]() { this->trigger(); });
   }
 };
-class Sim7600ReceivedUssdTrigger : public Trigger<std::string> {
+class a7670ReceivedUssdTrigger : public Trigger<std::string> {
  public:
-  explicit Sim7600ReceivedUssdTrigger(Sim7600Component *parent) {
+  explicit a7670ReceivedUssdTrigger(a7670Component *parent) {
     parent->add_on_ussd_received_callback([this](const std::string &ussd) { this->trigger(ussd); });
   }
 };
 
-template<typename... Ts> class Sim7600SendSmsAction : public Action<Ts...> {
+template<typename... Ts> class a7670SendSmsAction : public Action<Ts...> {
  public:
-  Sim7600SendSmsAction(Sim7600Component *parent) : parent_(parent) {}
+  a7670SendSmsAction(a7670Component *parent) : parent_(parent) {}
   TEMPLATABLE_VALUE(std::string, recipient)
   TEMPLATABLE_VALUE(std::string, message)
 
@@ -169,12 +169,12 @@ template<typename... Ts> class Sim7600SendSmsAction : public Action<Ts...> {
   }
 
  protected:
-  Sim7600Component *parent_;
+  a7670Component *parent_;
 };
 
-template<typename... Ts> class Sim7600SendUssdAction : public Action<Ts...> {
+template<typename... Ts> class a7670SendUssdAction : public Action<Ts...> {
  public:
-  Sim7600SendUssdAction(Sim7600Component *parent) : parent_(parent) {}
+  a7670SendUssdAction(a7670Component *parent) : parent_(parent) {}
   TEMPLATABLE_VALUE(std::string, ussd)
 
   void play(Ts... x) {
@@ -183,12 +183,12 @@ template<typename... Ts> class Sim7600SendUssdAction : public Action<Ts...> {
   }
 
  protected:
-  Sim7600Component *parent_;
+  a7670Component *parent_;
 };
 
-template<typename... Ts> class Sim7600DialAction : public Action<Ts...> {
+template<typename... Ts> class a7670DialAction : public Action<Ts...> {
  public:
-  Sim7600DialAction(Sim7600Component *parent) : parent_(parent) {}
+  a7670DialAction(a7670Component *parent) : parent_(parent) {}
   TEMPLATABLE_VALUE(std::string, recipient)
 
   void play(Ts... x) {
@@ -197,27 +197,27 @@ template<typename... Ts> class Sim7600DialAction : public Action<Ts...> {
   }
 
  protected:
-  Sim7600Component *parent_;
+  a7670Component *parent_;
 };
-template<typename... Ts> class Sim7600ConnectAction : public Action<Ts...> {
+template<typename... Ts> class a7670ConnectAction : public Action<Ts...> {
  public:
-  Sim7600ConnectAction(Sim7600Component *parent) : parent_(parent) {}
+  a7670ConnectAction(a7670Component *parent) : parent_(parent) {}
 
   void play(Ts... x) { this->parent_->connect(); }
 
  protected:
-  Sim7600Component *parent_;
+  a7670Component *parent_;
 };
 
-template<typename... Ts> class Sim7600DisconnectAction : public Action<Ts...> {
+template<typename... Ts> class a7670DisconnectAction : public Action<Ts...> {
  public:
-  Sim7600DisconnectAction(Sim7600Component *parent) : parent_(parent) {}
+  a7670DisconnectAction(a7670Component *parent) : parent_(parent) {}
 
   void play(Ts... x) { this->parent_->disconnect(); }
 
  protected:
-  Sim7600Component *parent_;
+  a7670Component *parent_;
 };
 
-}  // namespace sim7600
+}  // namespace a7670
 }  // namespace esphome
