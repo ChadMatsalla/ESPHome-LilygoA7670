@@ -10,6 +10,8 @@ class A7670LTEComponent : public Component {
   void setup() override;
   void loop() override;
   void dump_config() override;
+  void connectToServer();
+  void publishMessage(std::string topic, std::string message);
 };
 
 
