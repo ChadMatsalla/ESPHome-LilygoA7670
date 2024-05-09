@@ -15,7 +15,7 @@ a7670_lte_ns = cg.esphome_ns.namespace("a7670_lte")
 A7670LTEComponent = a7670_lte_ns.class_("A7670LTEComponent", cg.Component)
 
 CONFIG_SCHEMA = cv.Schema({
-  cv.GenerateID(): cv.declare_id(EmptyComponent),
+  cv.GenerateID(): cv.declare_id(A7670LTEComponent),
   cv.Required('server'): cv.string,
   cv.Required('user'): cv.string,
   cv.Required('pass'): cv.string,
