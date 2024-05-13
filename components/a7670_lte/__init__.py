@@ -5,9 +5,8 @@ from esphome.const import (
     CONF_ID,
     CONF_TRIGGER_ID,
 )
-from esphome.components import uart
 
-DEPENDENCIES = ["uart"]
+DEPENDENCIES = []
 CODEOWNERS = ["@chadmatsalla"]
 MULTI_CONF = True
 
