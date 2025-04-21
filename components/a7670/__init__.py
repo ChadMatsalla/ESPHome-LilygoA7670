@@ -5,9 +5,8 @@ from esphome.const import (
     CONF_ID,
     CONF_TRIGGER_ID,
 )
-from esphome.components import uart
 
-DEPENDENCIES = ["uart"]
+DEPENDENCIES = []
 CODEOWNERS = ["@chino-lu"]
 MULTI_CONF = True
 
@@ -97,17 +96,11 @@ CONFIG_SCHEMA = cv.All(
         }
     )
     .extend(cv.polling_component_schema("5s"))
-    .extend(uart.UART_DEVICE_SCHEMA)
 )
-FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
-    "a7670", require_tx=True, require_rx=True
-)
-
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
-    await uart.register_uart_device(var, config)
 
     for conf in config.get(CONF_ON_SMS_RECEIVED, []):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
