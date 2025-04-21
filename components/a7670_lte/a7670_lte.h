@@ -23,38 +23,81 @@
 
 
 // #include <utilities.h>
+#include "esp_netif.h"
 #include "TinyGsmClient.h"
-#include <PubSubClient.h>
+// #include <PubSubClient.h>
 #include "esphome/core/component.h"
+#include "esphome/core/defines.h"
+// #include "esphome/components/one_wire/one_wire.h"
+// #include "esphome/components/dallas_temp/dallas_temp.h"
+#include "esphome/components/network/ip_address.h"
+// #include "esphome/components/deep_sleep/deep_sleep_component.h"
+// #include "esphome/components/dallas/dallas_component.h"
+// #include "dallas_component.h"
+
 
 namespace esphome {
 namespace a7670_lte {
 
 class A7670LTEComponent : public Component {
  protected:
-  int wasSetUp = 0;
-  int modemPoweredOn = 0;
-  int waitPeriodPassed = 0;
-  int networkConnected = 0;
-  int networkAvailable = 0;
-  int modemStarted = 0;
-  int modemInitialized = 0;
-  int apnConnected = 0;
-  int mqttSent = 0;
-  int modemReady = 0;
+  int was_set_up = 0;
+  int modem_powered_on = 0;
+  int wait_period_passed = 0;
+  int network_connected = 0;
+  int network_available = 0;
+  int modem_started = 0;
+  int modem_initialized = 0;
+  int apn_connected = 0;
+  int apn_written = 0;
+  int mqtt_sent = 0;
+  int modem_ready = 0;
+  int use_cellular = 0;
+  int modem_warmup_delay = 0;
+  int sensors_checked = 0;
+  std::string apn = "";
+  std::string mqtt_username = "";
+  std::string mqtt_password = "";
+  std::string mqtt_server = "";
+  String sensor_temperature_internal = "";
+  // esphome::dallas::DallasTemperatureSensor*& internal_temperature = new esphome::dallas::DallasTemperatureSensor();
+  // esphome::one_wire::OneWireBus one_wire_bus = {};
+  // esphome::dallas_temp::DallasTemperatureSensor* sensor_internal_temperature = {};
+  // esphome::dallas_temp::DallasTemperatureSensor* sensor_external_temperature = {};
  public:
   void setup() override;
   void loop() override;
   void dump_config() override;
-  void connectToServer();
-  void powerOnModem();
-  void publishMessage(std::string topic, std::string message);
+  void connect_to_server();
+  void power_on_modem();
+  void publish_message(std::string topic, std::string message);
   void initializeModem();
-  void sendCommand(std::string command);
-  String setAPN();
-  String getNetwork();
-  boolean mqttConnect();
+  void send_command(std::string command);
+  void set_apn(std::string thisapn);
+  String get_network();
+  boolean mqtt_connect();
+  void deep_sleep();
+  // void set_internal_temperature_sensor(esphome::dallas_temp::DallasTemperatureSensor*& c);
+  // void set_external_temperature_sensor(esphome::dallas_temp::DallasTemperatureSensor*& c);
+  void set_global(std::string,int); 
+  void set_use_cellular(int);
+  void set_mqtt_server(std::string a);
+  void set_mqtt_username(std::string u);
+  void set_mqtt_password(std::string p);
+  void check_sensors();
+  bool modem_is_ready();
+  bool isConnected();
+  bool is_connected();
+  bool is_disabled();
+  bool can_proceed() override;
+  void set_modem_warmup_delay(int delay);
+  void on_shutdown() override { power_down(); }
+  // IPAddress get_dns_address(uint8_t num);
+ protected:
+  void power_down(); 
+  
 };
+
 
 
 }  // namespace empty_component
