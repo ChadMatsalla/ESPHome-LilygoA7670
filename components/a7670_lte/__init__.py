@@ -19,7 +19,6 @@ CONFIG_SCHEMA = cv.Schema({
   cv.Required('server'): cv.string,
   cv.Required('user'): cv.string,
   cv.Required('pass'): cv.string,
-  cv.Optional('smlm', default=10): cv.int_,
 }).extend(cv.COMPONENT_SCHEMA)
 
 def to_code(config):
